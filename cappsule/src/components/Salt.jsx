@@ -48,8 +48,10 @@ function Salt() {
       const allPharmacies = Object.values(formDetails).filter(Boolean).flat();
       if (allPharmacies.length) {
         return allPharmacies.map((pharmacy, index) => (
-          <p key={index}>
-            Store ID : {pharmacy.pharmacy_id}, Price: {pharmacy.selling_price}
+          <p 
+          className='font-bold text-2xl'
+          key={index}>
+          From ₹{pharmacy.selling_price}
           </p>
         ));
       }
@@ -58,88 +60,58 @@ function Salt() {
   return <p>No Store Is Selling This Product Near You.</p>;
 };
 
-
   return (
-    <div>
-      {/* <h1>Salt Search</h1>
+
+    <div className='mr-56 ml-56'>
+
+      <h1 className='text-center text-2xl mt-6'>Cappsule web development test</h1> 
+
       <input
+        className='p-4 mb-8 border border-gray-100 rounded-xl shadow'
         type="text"
-        placeholder="Search for a salt..."
+        placeholder="Type your medicine name here..." 
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
-      {filteredResults.length > 0 ? (
+
+      <hr className=' p-4'  />
+
+        {filteredResults.length > 0 ? (
         filteredResults.map((suggestion) => (
-          <div key={suggestion.id}>
-            <h2>{suggestion.salt}</h2>
-            <p>Form: {suggestion.most_common.Form}</p>
-            <p>Strength: {suggestion.most_common.Strength}</p>
-            <p>Packing: {suggestion.most_common.Packing}</p>
 
-            {renderPharmacyInfo(suggestion.most_common)}
+          <div
+            className="mb-10  p-4 bg-white border border-gray-100 rounded-lg shadow  bg-gradient-to-r from-gray-100 from-60% to-green-100 to-80%"
+            key={suggestion.id}>
+
+            <div className='grid grid-cols-3 gap-4 content-center text-center'>
+              <div>
+              <h2>{suggestion.salt}</h2>
+              <p>Form: {suggestion.most_common.Form}</p>
+              <p>Strength: {suggestion.most_common.Strength}</p>
+              <p>Packing: {suggestion.most_common.Packing}</p>
+            </div>
+
+            <div className='content-center text-center'>
+              <h2  className='font-bold text-xl '>Salt A</h2>
+              <p className=''>{suggestion.most_common.Form}|{suggestion.most_common.Strength}|{suggestion.most_common.Packing}</p>
+            </div>
+
+            <div className="content-center text-center">
+              {renderPharmacyInfo(suggestion.most_common)}
+            </div>
+            </div>
+
           </div>
-        ))
+
+          
+
+
+
+        ))   
       ) : searchTerm && (
-        <p>No results found</p>
-      )} */}
+        <p className='text-center color-red'>No Results Found</p>
+      )}
 
-
-    <h1>Salt Search</h1>
-    <input
-        className=''
-        type="text"
-        placeholder="Search for a salt..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-    />
-        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                <tr>
-                    <th scope="col" class="px-6 py-3">
-                        Salt
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        Form
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        Strength
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        Packing
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        Availability & Price
-                    </th>
-                </tr>
-            </thead>
-
-            <tbody>
-            {filteredResults.length > 0 ? (
-            filteredResults.map((suggestion) => (
-                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
-                key={suggestion.id}>
-                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        {suggestion.salt}
-                    </th>
-                    <td class="px-6 py-4">
-                        {suggestion.most_common.Form}
-                    </td>
-                    <td class="px-6 py-4">
-                        {suggestion.most_common.Strength}
-                    </td>
-                    <td class="px-6 py-4">
-                        {suggestion.most_common.Packing}
-                    </td>
-                    <td class="px-6 py-4">
-                        {renderPharmacyInfo(suggestion.most_common)}
-                    </td>
-                </tr>
-                ))
-            ) : searchTerm && (
-                <p>No results found</p>
-            )}
-            </tbody>
-        </table>
     </div>
   );
 }
