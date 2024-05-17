@@ -16,7 +16,11 @@ function Salt() {
         return response.json();
       })
       .then(data => {
-        setSaltSuggestions(data.data.saltSuggestions);
+        const initialSaltSuggestions = data.data.saltSuggestions.map(suggestion => ({
+          ...suggestion,
+          showAllForms: false // Initialize showAllForms property for each suggestion
+        }));
+        setSaltSuggestions(initialSaltSuggestions);
       })
       .catch(error => {
         console.error('Error fetching data:', error);
@@ -36,9 +40,17 @@ function Salt() {
   }, [searchTerm, saltSuggestions]);
 
   //this is the function hide and more button "available_foms"
-  const toggleFormsVisibility = () => {
-    setShowAllForms(prevState => !prevState);
-  };
+    const toggleFormsVisibility = (suggestionId) => {
+    setSaltSuggestions(prevSuggestions => {
+      return prevSuggestions.map(suggestion => {
+        if (suggestion.id === suggestionId) {
+          return { ...suggestion, showAllForms: !suggestion.showAllForms };
+        }
+        return suggestion;
+      });
+    });
+    };
+
 
   //Here we filtering the pharmacy_id and price of slats
   const renderPharmacyInfo = (commonForm) => {
@@ -49,15 +61,38 @@ function Salt() {
 
     if (formDetails) {  
       const allPharmacies = Object.values(formDetails).filter(Boolean).flat();
-      if (allPharmacies.length) {
-        return allPharmacies.map((pharmacy, index) => (
-          <p 
-          className='font-bold text-2xl'
-          key={index}>
-          From ₹{pharmacy.selling_price}
-          </p>
-        ));
-      }
+      // if (allPharmacies.length) {
+      //   return allPharmacies.map((pharmacy, index) => (
+      //     <p 
+      //     className='font-bold text-2xl'
+      //     key={index}>
+      //     From ₹{pharmacy.selling_price}
+      //     </p>
+      //   ));
+      // }
+      if (formDetails) {  
+            const allPharmacies = Object.values(formDetails).filter(Boolean).flat();
+            if (allPharmacies.length) {
+              // Extracting all selling prices
+              const sellingPrices = allPharmacies.map(pharmacy => pharmacy.selling_price);
+              // Sorting selling prices in ascending order
+              const sortedPrices = sellingPrices.sort((a, b) => a - b);
+              // Selecting the lowest price
+              const lowestPrice = sortedPrices[0];
+              // Rendering lowest price
+              const remainingPrices = sortedPrices.slice(1); // Exclude the lowest price
+              return (
+                <>
+                  <p className='font-bold text-2xl'>From ₹{lowestPrice}</p>
+                    {remainingPrices.map((price, index) => (
+                      <p key={index} className=" font-bold text-2xl">
+                        From ₹{price}
+                      </p>
+                    ))}
+                </>
+              );
+            }
+          }
     }
   }
   return <p className='p-4 border border-green-300 bg-slate-50 rounded-xl'>No Store Is Selling This Product Near You.</p>;
@@ -99,42 +134,45 @@ function Salt() {
 
           <div className='grid grid-cols-3'>
             <div className='content-center leading-10'>
+
               {/* salt name */}
-              <h2>{suggestion.salt}</h2>
-              <div className='flex justify-between '>
-              <div className='grid'>
-                <p>Form</p>
-                <p>Strength</p>
-                <p>Packing</p>
-              </div>
-              <div className='grid gap-2'>
-                <div className='grid grid-cols-2 gap-2 '>
-                {showAllForms ? (
-                  suggestion.available_forms.map( i => {
-                    if (i < 3) {
-                     return <p key={`${form}-${i}`}>{suggestion.available_forms[i]} </p>
-                    }
-                  })
-                  )
-                  : (
-                     suggestion.available_forms.slice(0, 3).map(form =>
-                     <p className='p-1 text-md font-semibold border cursor-pointer border-green-700 rounded-lg shadow-md hover:shadow-green-700'
-                     key={form}>
-                     {form}</p>)
-                  )
-                }
-                {suggestion.available_forms.length > 3 && (
-                        <button className='font-semibold text-md text-blue-700' onClick={toggleFormsVisibility}>
-                          {showAllForms ? 'Hide' : 'More...'}
-                        </button>
-                      )}
+              {/* <h2>{suggestion.sat}</h2> */}
+
+            <div className='flex justify-between '>
+                <div className='grid'>
+                  <p>Form</p>
+                  <p>Strength</p>
+                  <p>Packing</p>
                 </div>
+
+              <div className='grid gap-2'>
+                
+                <div className='grid grid-cols-2 gap-2 '>
+                  {suggestion.showAllForms
+                    ? suggestion.available_forms.map((form, i) => (
+                        <p
+                         className='p-1 text-md font-semibold border cursor-pointer border-green-700 rounded-lg shadow-md hover:shadow-green-700'
+                         key={i}>{form}</p>
+                      ))
+                    : suggestion.available_forms.slice(0, 2).map((form, i) => (
+                        <p
+                        className='p-1 text-md font-semibold border cursor-pointer border-green-700 rounded-lg shadow-md hover:shadow-green-700'
+                        key={i}>{form}</p>
+                      ))}
+                  {suggestion.available_forms.length > 2 && (
+                     <button className='font-semibold text-md text-blue-700' onClick={() => toggleFormsVisibility(suggestion.id)}>
+                      {suggestion.showAllForms ? 'Hide' : 'More..'}
+                    </button>
+                  )}
+                </div>
+
                 <div>
                   <p className='p-1 text-md font-semibold border cursor-pointer border-green-700 rounded-lg shadow-md hover:shadow-green-700'>{suggestion.most_common.Strength}</p>
                 </div>
                 <div>
                   <p className='p-1 text-md font-semibold border cursor-pointer border-green-700 rounded-lg shadow-md hover:shadow-green-700'>{suggestion.most_common.Packing}</p>
                 </div>
+                
               </div>
             </div>
           </div>
